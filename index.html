@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visual Form Designer</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <div class="top-navbar">
+        <div class="logo">Form Designer</div>
+        <button class="button primary-button" id="save-form">Save</button>
+      </div>
+      <div class="designer-box">
+        <div class="sidebar">
+          <div id="controls">
+            <div class="component">Components</div>
+            <div class="btn-area">
+              <button id="add-input">
+                <span>Add Input</span> <span>+</span>
+              </button>
+              <button id="add-select">
+                <span>Add Select</span> <span>+</span>
+              </button>
+              <button id="add-textarea">
+                <span>Add Textarea</span> <span>+</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="form-designer">
+          <div class="card">
+            <div id="form-container"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- modal for change name and placeholder -->
+    <div id="editModal" class="modal">
+      <div class="modal-content" id="modal-form">
+        <span class="close cross-btn">&times;</span>
+        <h2>Add <span id="element-name"></span></h2>
+        <form>
+          <div class="form-element" draggable="true" data-index="0">
+            <div class="label-box">
+              <label>Sample Label</label>
+            </div>
+            <div class="input_wrapper">
+              <input type="text" id="modalLabel" name="modalLabel" />
+            </div>
+          </div>
+
+          <div class="form-element" draggable="true" data-index="0">
+            <div class="label-box">
+              <label>Sample Placeholder</label>
+            </div>
+            <div class="input_wrapper">
+              <input
+                type="text"
+                id="modalPlaceholder"
+                name="modalPlaceholder"
+              />
+            </div>
+          </div>
+          <div class="modal-buttons-container">
+            <button
+            class="button secondary-button"
+            type="button"
+            id="add-element"
+          >
+            Add 
+          </button>
+          <button class="button primary-button close" type="button">
+            Close 
+          </button>
+          </div>
+         
+        </form>
+      </div>
+    </div>
+    <script  src="script.js"></script>
+  </body>
+</html>
