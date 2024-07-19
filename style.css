@@ -136,6 +136,9 @@ button {
     margin-top: 0;
 }
 
+#form-container .form-element{
+    cursor: grab;
+}
 #form-container .form-element,
 #modal-form .form-element {
     margin-bottom: 20px;
