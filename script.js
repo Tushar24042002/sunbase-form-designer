@@ -4,6 +4,11 @@ const ELEMENT_NAME = {
     TEXTAREA: "textarea"
 }
 
+const BUTTON_NAME = {
+    ADD: "Add",
+    UPDATE: "Update",
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const sampleData = [
         {
@@ -38,7 +43,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById("editModal");
     const modalCloseBtns = document.querySelectorAll(".close");
     const addButton = document.getElementById("add-element");
+    const addOptionButton = document.getElementById("add-option");
+    const optionsContainer = document.getElementById("options-container");
+    const optionsList = document.getElementById("options-list");
+    const placeholderContainer = document.getElementById("placeholderContainer");
+
     let currentElementType = '';
+    let currentElementIndex = null;
 
 
     // create delete svg element
@@ -46,13 +57,36 @@ document.addEventListener('DOMContentLoaded', () => {
         const iconSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         const iconPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         iconSvg.setAttribute('viewBox', '0 0 448 512');
-        iconSvg.setAttribute('width' , '12px');
+        iconSvg.setAttribute('width', '12px');
         iconPath.setAttribute(
             'd',
             "M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"
         );
         iconSvg.appendChild(iconPath);
         return iconSvg;
+    }
+
+    // create Edit svg element
+    const editIcon = () => {
+        const iconSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        const iconPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        iconSvg.setAttribute('viewBox', '0 0 512 512');
+        iconSvg.setAttribute('width', '12px');
+        iconPath.setAttribute(
+            'd',
+            "M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160L0 416c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-96c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7-14.3 32-32 32L96 448c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 64z"
+        );
+        iconSvg.appendChild(iconPath);
+        return iconSvg;
+    }
+
+
+
+
+    const openEditModal = (element, index) => {
+        currentElementIndex = index;
+        addButton.innerHTML = BUTTON_NAME.UPDATE;
+        openModal(element.type, element.label, element.placeholder || element.options.join(','),  BUTTON_NAME.UPDATE);
     }
 
     // print the form whenever its called (add , delete)
@@ -68,6 +102,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const label = document.createElement('label');
             label.textContent = element.label;
             labelWarapper.classList.add('label-box');
+
+            // add parent div for contain both (DELETE ICON AND EDIT ICON)
+            const rightDiv = document.createElement('div');
+            rightDiv.classList.add('actions_div');
+
+            // create edit button
+            const editButton = document.createElement('span');
+            editButton.appendChild(editIcon());
+            editButton.classList.add('actions');
+
+            editButton.addEventListener('click', () => {
+                openEditModal(element, index);
+            });
+
+            // create delete button
             const deleteButton = document.createElement('span');
             deleteButton.appendChild(deleteIcon());
             deleteButton.classList.add('actions');
@@ -77,7 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderForm();
             });
             labelWarapper.appendChild(label);
-            labelWarapper.appendChild(deleteButton);
+            rightDiv.appendChild(editButton);
+            rightDiv.appendChild(deleteButton);
+            labelWarapper.appendChild(rightDiv);
 
 
             let input;
@@ -147,14 +198,48 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { offset: Number.NEGATIVE_INFINITY }).element;
     };
 
-    // .generic modal function for all element buttons (add labels and placeholders)
-    const openModal = (type, label, placeholder) => {
+
+    // function for open the modal (if edit then set value in inputs)
+    const openModal = (type, label, placeholderOrOptions, actionName) => {
         currentElementType = type;
-        document.getElementById("element-name").innerText = currentElementType;
+        document.getElementById("element-name").innerText =`${actionName} ${currentElementType}`;
         document.getElementById('modalLabel').value = label;
-        document.getElementById('modalPlaceholder').value = placeholder;
+
+        if (currentElementType === ELEMENT_NAME.SELECT) {
+            placeholderContainer.style.display = "none";
+            optionsContainer.style.display = "block";
+            optionsList.innerHTML = '';
+            const options = placeholderOrOptions.split(',');
+            options.forEach(option => {
+                addOptionInput(option.trim());
+            });
+        } else {
+            placeholderContainer.style.display = "block";
+            optionsContainer.style.display = "none";
+            document.getElementById('modalPlaceholder').value = placeholderOrOptions;
+        }
+
         modal.style.display = "block";
     };
+
+    // add option input on click on Add
+    const addOptionInput = (value = '') => {
+        const optionInput = document.createElement('div');
+        optionInput.classList.add('option-input');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = value;
+        const removeButton = document.createElement('div');
+        removeButton.appendChild(deleteIcon());
+        removeButton.addEventListener('click', () => {
+            optionInput.remove();
+        });
+
+        optionInput.appendChild(input);
+        optionInput.appendChild(removeButton);
+        optionsList.appendChild(optionInput);
+    }
+
 
     // modal close button
     modalCloseBtns.forEach((button) => {
@@ -164,16 +249,81 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 
 
+    // on add click to append the form
+    const saveChanges = () => {
+        const newLabel = document.getElementById('modalLabel').value;
+        const newPlaceholder = document.getElementById('modalPlaceholder').value;
+        const newOptions = [...optionsList.querySelectorAll('input')].map(input => input.value.trim()).filter(value => value);
+        if (currentElementIndex !== null) {
+            if (currentElementType === ELEMENT_NAME.INPUT || currentElementType === ELEMENT_NAME.TEXTAREA) {
+                formElements[currentElementIndex].label = newLabel;
+                formElements[currentElementIndex].placeholder = newPlaceholder;
+            } else if (currentElementType === ELEMENT_NAME.SELECT) {
+                formElements[currentElementIndex].label = newLabel;
+                formElements[currentElementIndex].options = newOptions;
+            }
+        } else {
+            if (currentElementType === ELEMENT_NAME.INPUT) {
+                formElements.push({
+                    id: Date.now().toString(),
+                    type: ELEMENT_NAME.INPUT,
+                    label: newLabel,
+                    placeholder: newPlaceholder
+                });
+            } else if (currentElementType === ELEMENT_NAME.SELECT) {
+                formElements.push({
+                    id: Date.now().toString(),
+                    type: ELEMENT_NAME.SELECT,
+                    label: newLabel,
+                    options: newOptions
+                });
+            } else if (currentElementType === ELEMENT_NAME.TEXTAREA) {
+                formElements.push({
+                    id: Date.now().toString(),
+                    type: ELEMENT_NAME.TEXTAREA,
+                    label: newLabel,
+                    placeholder: newPlaceholder,
+                });
+            }
+        }
+
+        renderForm();
+        modal.style.display = "none";
+        currentElementIndex = null;
+    };
+
+    // onclick add option
+    const addOption = () => {
+        addOptionInput();
+    }
+
+    // close the modal by cross and close
+    modalCloseBtns.forEach((button) => {
+        button.onclick = function () {
+            modal.style.display = "none";
+        };
+    });
+
+    addButton.addEventListener('click', saveChanges);
+
+    addOptionButton.addEventListener('click', addOption);
+
     document.getElementById('add-input').addEventListener('click', () => {
-        openModal(ELEMENT_NAME.INPUT, "Sample Label", "Sample Placeholder");
+        currentElementIndex = null;
+        addButton.innerHTML = BUTTON_NAME.ADD;
+        openModal(ELEMENT_NAME.INPUT, "Sample Label", "Sample Placeholder", BUTTON_NAME.ADD);
     });
 
     document.getElementById('add-select').addEventListener('click', () => {
-        openModal(ELEMENT_NAME.SELECT, "Sample Label", "Sample Option");
+        currentElementIndex = null;
+        addButton.innerHTML = BUTTON_NAME.ADD;
+        openModal(ELEMENT_NAME.SELECT, "Sample Label", "Sample Option",  BUTTON_NAME.ADD);
     });
 
     document.getElementById('add-textarea').addEventListener('click', () => {
-        openModal(ELEMENT_NAME.TEXTAREA, "Sample Label", "Sample Placeholder");
+        currentElementIndex = null;
+        addButton.innerHTML = BUTTON_NAME.ADD;
+        openModal(ELEMENT_NAME.TEXTAREA, "Sample Label", "Sample Placeholder",  BUTTON_NAME.ADD);
     });
 
     document.getElementById('save-form').addEventListener('click', () => {
@@ -181,37 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    // on add click to append the form
-    addButton.addEventListener('click', () => {
-        const newLabel = document.getElementById('modalLabel').value;
-        const newPlaceholder = document.getElementById('modalPlaceholder').value;
 
-        if (currentElementType === ELEMENT_NAME.INPUT) {
-            formElements.push({
-                id: Date.now().toString(),
-                type: ELEMENT_NAME.INPUT,
-                label: newLabel,
-                placeholder: newPlaceholder
-            });
-        } else if (currentElementType === ELEMENT_NAME.SELECT) {
-            formElements.push({
-                id: Date.now().toString(),
-                type: ELEMENT_NAME.SELECT,
-                label: newLabel,
-                options: [newPlaceholder]
-            });
-        } else if (currentElementType === ELEMENT_NAME.TEXTAREA) {
-            formElements.push({
-                id: Date.now().toString(),
-                type: ELEMENT_NAME.TEXTAREA,
-                label: newLabel,
-                placeholder: newPlaceholder,
-            });
-        }
-
-        renderForm();
-        modal.style.display = "none";
-    });
 
     renderForm();
 });

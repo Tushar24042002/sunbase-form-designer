@@ -170,6 +170,44 @@ textarea {
     width: 100%;
 }
 
+#options-list{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+.option-input{
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+.option-input input{
+    width: 95%;
+}
+
+.option-input div{
+    display: flex;
+    aspect-ratio: 1;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+#add-option{
+    background-color: #000;
+    color: white;
+    border-radius: 4px;
+    padding: 5px 8px;
+    font-size: 12px;
+    border: 1px solid #000;
+}
+#add-option:hover{
+    background-color: #fff;
+    color: #000;
+}
 /*styled form  end */
 
 /************************* editModal modal start  ***************************/
@@ -249,6 +287,21 @@ textarea {
     background-color: #fff;
 }
 
+
+.actions_div{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.actions_div .actions{
+    position: relative;
+    width: 22px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
 
 /*  responsiveness start */
 @media(max-width : 768px) {

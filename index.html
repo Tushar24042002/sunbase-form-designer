@@ -38,10 +38,15 @@
     </main>
 
     <!-- modal for change name and placeholder -->
+ 
+
+
+
+
     <div id="editModal" class="modal">
       <div class="modal-content" id="modal-form">
         <span class="close cross-btn">&times;</span>
-        <h2>Add <span id="element-name"></span></h2>
+        <h2><span id="element-name"></span></h2>
         <form>
           <div class="form-element" draggable="true" data-index="0">
             <div class="label-box">
@@ -52,7 +57,7 @@
             </div>
           </div>
 
-          <div class="form-element" draggable="true" data-index="0">
+          <div class="form-element" draggable="true" data-index="0" id="placeholderContainer">
             <div class="label-box">
               <label>Sample Placeholder</label>
             </div>
@@ -64,6 +69,19 @@
               />
             </div>
           </div>
+
+
+          <div class="form-element" draggable="true" data-index="0" id="options-container" style="display:none;">
+            <div class="label-box">
+              <label>Options : </label>
+              <button type="button" id="add-option">Add Option</button>
+            </div>
+            <div class="input_wrapper">
+              <div id="options-list"></div>
+       
+            </div>
+          </div>
+
           <div class="modal-buttons-container">
             <button
             class="button secondary-button"
